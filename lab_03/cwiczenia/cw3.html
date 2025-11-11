@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./style.css">
+    <title>Ćwiczenie 3</title>
+    <style>
+        .product-grid {
+            align-self: stretch;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-auto-rows: minmax(500px, auto);
+            gap: 3em;
+        }
+
+        .card {
+            display: flex;
+            flex-direction: column;
+            background-color: white;
+            border-radius: 10px;
+            padding: 2em;
+            box-shadow: 2px 3px 5px black;
+            border-radius: 10px;
+
+        }
+
+        img {
+            justify-self: center;
+            align-self: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="wrapper">
+        <h1>Produkty</h1>
+        <div class="sort">
+            <input type="search" name="search" placeholder="Wyszukaj produkt">
+            <button id="search">Wyszukaj</button>
+            <label for="sort">Sortuj</label>
+            <select name="sort" id="sort">
+                <option value="def" selected>Brak</option>
+                <option value="asc">Rosnąco</option>
+                <option value="desc">Malejąco</option>
+            </select>
+        </div>
+        <div class="product-grid">
+        </div>
+    </div>
+    <script>
+        const parent = document.querySelector(".product-grid");
+        let state = null;
+        let def_state = null;
+        let original = null;
+        const render = (state) => {
+            state.forEach(product => {
+                const card = `
+                        <img src="${product.thumbnail}" alt="product">
+                        <div class="desc">
+                            <h2>${product.title}</h2>
+                            <p>${product.description}</p>
+                         </div>
+                    `;
+                const card_el = document.createElement("div");
+                card_el.innerHTML = card;
+                card_el.className = "card";
+                parent.appendChild(card_el);
+            })
+        }
+
+        fetch("https://dummyjson.com/products")
+            .then(res => res.json())
+            .then(data => {
+                const def = data.products;
+                state = def;
+                def_state = def;
+                original = def;
+                render(state);
+
+            })
+
+        const sortAsc = (arr) => {
+            return [...arr].sort((a, b) => {
+                return a.title.localeCompare(b.title);
+            })
+        }
+
+        const sortDesc = (arr) => {
+            return [...arr].sort((a, b) => {
+                return b.title.localeCompare(a.title);
+            })
+        }
+
+        const restoreDef = () => {
+            return [...def_state];
+        }
+
+        const sort = (arr, type) => {
+            if (type === "desc") return sortDesc(arr);
+            else if (type === "asc") return sortAsc(arr);
+            else return restoreDef();
+        }
+
+        const clearCards = () => {
+            parent.innerHTML = "";
+        }
+
+        document.querySelector("select").addEventListener("change", (e) => {
+            const to_render = sort(state, e.target.value);
+            clearCards();
+            state = to_render
+            render(state);
+
+        })
+
+        const match = (phrases, target) => {
+            const words = (Array.isArray(phrases)) ? phrases : [phrases];
+            return words.every(word => target.map(el => el.toLowerCase()).includes(word.toLowerCase()));
+        }
+
+        document.getElementById("search").addEventListener("click", () => {
+            const inputValue = document.querySelector("input").value.trim(); // usuwa spacje
+
+            console.log(inputValue)
+            if (!inputValue) {
+                console.log(original)
+                state = [...original]
+                def_state = [...original]
+                clearCards();
+                render([...original]);
+                return;
+            }
+
+            const keywords = inputValue.split(" ").filter(k => k);
+
+            const cards = [...state];
+            const new_cards = cards.filter(card => {
+                const title = card.title.split(" ");
+                const desc = card.description.split(" ");
+                return match(keywords, title) || match(keywords, desc);
+            })
+            state = new_cards;
+            def_state = new_cards;
+            clearCards();
+            render(state)
+        })
+    </script>
+</body>
+
+</html>
