@@ -6,22 +6,45 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./style.css">
     <title>Ćwiczenie 2</title>
+    <style>
+        body {
+            height: 100vh;
+        }
+
+        .column {
+            justify-content: space-evenly;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 200px;
+        }
+    </style>
 </head>
 
 <body>
     <div class="wrapper">
-        <h1>Generator haseł</h1>
-        <form>
-            <label for="min_length">Minimalna długość hasła</label>
-            <input type="number" name="min_length" id="min_length">
-            <label for="max_length">Maksymalna długość hasła</label>
-            <input type="number" name="max_length" id="max_length">
-            <label for="capitalize">Czy hasło ma zawierać wielkie litery?</label>
-            <input type="checkbox" name="capitalize" id="capitalize">
-            <label for="special">Czy hasło ma zawierać znaki specjalne?</label>
-            <input type="checkbox" name="special" id="special">
-            <button type="button" id="generate">Wygeneruj hasło</button>
-        </form>
+        <div class="column">
+            <h1>Generator haseł</h1>
+            <form>
+                <label for="min_length">Minimalna długość hasła</label>
+                <input type="number" name="min_length" id="min_length">
+                <label for="max_length">Maksymalna długość hasła</label>
+                <input type="number" name="max_length" id="max_length">
+                <div>
+                    <label for="capitalize">Czy hasło ma zawierać wielkie litery?</label>
+                    <input type="checkbox" name="capitalize" id="capitalize">
+                </div>
+                <div>
+                    <label for="special">Czy hasło ma zawierać znaki specjalne?</label>
+                    <input type="checkbox" name="special" id="special">
+                </div>
+                <button type="button" id="generate">Wygeneruj hasło</button>
+
+            </form>
+        </div>
     </div>
     <script>
         const generate = document.getElementById("generate");

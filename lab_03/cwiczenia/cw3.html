@@ -30,6 +30,12 @@
             justify-self: center;
             align-self: center;
         }
+
+        .sort {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+        }
     </style>
 </head>
 
@@ -37,14 +43,18 @@
     <div class="wrapper">
         <h1>Produkty</h1>
         <div class="sort">
-            <input type="search" name="search" placeholder="Wyszukaj produkt">
-            <button id="search">Wyszukaj</button>
-            <label for="sort">Sortuj</label>
-            <select name="sort" id="sort">
-                <option value="def" selected>Brak</option>
-                <option value="asc">Rosnąco</option>
-                <option value="desc">Malejąco</option>
-            </select>
+            <div>
+                <input type="search" name="search" placeholder="Wyszukaj produkt">
+                <button id="search">Wyszukaj</button>
+            </div>
+            <div>
+                <label for="sort">Sortuj</label>
+                <select name="sort" id="sort">
+                    <option value="def" selected>Brak</option>
+                    <option value="asc">Rosnąco</option>
+                    <option value="desc">Malejąco</option>
+                </select>
+            </div>
         </div>
         <div class="product-grid">
         </div>

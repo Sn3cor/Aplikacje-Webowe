@@ -3,13 +3,31 @@
 }
 
 .wrapper {
+    height: 100vh;
     display: flex;
     flex-direction: column;
+    align-items: center;
+    justify-content: center;
     gap: 1em;
     width: 60%;
     margin: 0 auto;
+    height: 100%;
 
 }
+
+.column {
+    border: 3px solid black;
+    border-radius: 0.8em;
+    min-height: 300px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    width: 40%;
+    padding: 1em;
+    background-color: white;
+}
+
 
 body {
     background-color: antiquewhite;
