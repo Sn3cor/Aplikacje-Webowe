@@ -26,7 +26,7 @@ class Pipe {
         ctx.drawImage(this.botImg, this.x, this.botY, this.width, this.pipeHeight);
     }
 
-    collides(bird) {
+    collides = (bird) => {
         const birdLeft = bird.x;
         const birdRight = bird.x + 48;
         const birdTop = bird.y;
@@ -47,8 +47,19 @@ class Pipe {
         return hitTop || hitBottom;
     }
 
-    isOffScreen() {
+    isOffScreen = () => {
         return this.x + this.width < 0;
+    }
+
+    checkIfBirdPassed = (bird) => {
+        const center = this.x + this.width / 2;
+
+        if (!this.passed && bird.x > center) {
+            this.passed = true;
+            return true;
+        }
+
+        return false;
     }
 }
 

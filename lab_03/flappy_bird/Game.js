@@ -6,6 +6,8 @@ class Game {
         this.ctx = context;
 
         this.score = 0;
+        this.highScore = Number(localStorage.getItem("highscore")) || 0;
+
         this.map = new Map(this.ctx, this.canvas);
 
         this.fps = 120;
@@ -27,6 +29,7 @@ class Game {
         requestAnimationFrame(this.animate);
 
         this.canvas.removeEventListener("click", this.startHandler);
+
         this.map.init();
     }
 
@@ -37,6 +40,7 @@ class Game {
 
         this.canvas.removeEventListener("click", this.resetHandler);
         this.map.init();
+        this.score = 0;
     }
 
     init = () => {
@@ -50,22 +54,70 @@ class Game {
         this.canvas.addEventListener("click", this.startHandler);
     }
 
-    parseScore = () => {
-        return String(this.score)
+    parseScore = (score) => {
+        return String(score)
             .split("")
             .map(d => this.numberImgs[d]);
     }
 
-    drawScore = (imgs) => {
-        const startX = this.canvas.width / 1.2 - (imgs.length * 24) / 2;
-        const y = 50;
+    drawScore = (imgs, state) => {
+        if (state === "game") {
+            const x = this.canvas.width / 1.2 - (imgs.length * 24) / 2;
+            const y = 50;
 
-        imgs.forEach((img, i) => {
-            this.ctx.drawImage(img, startX + i * 24, y, 24, 36);
-        });
+            imgs.forEach((img, i) => {
+                this.ctx.drawImage(img, x + i * 24, y, 24, 36);
+            });
+        }
+        else if (state === "gameOver") {
+            const x = this.canvas.width / 2 - (imgs.length * 18) / 2;
+            const y = 400;
+
+            imgs.forEach((img, i) => {
+                this.ctx.drawImage(img, x + i * 18, y, 18, 27);
+            });
+        }
+        else if (state === "gameOverBest") {
+            const x = this.canvas.width / 2 - (imgs.length * 18) / 2;
+            const y = 600;
+
+            imgs.forEach((img, i) => {
+                this.ctx.drawImage(img, x + i * 18, y, 18, 27);
+            });
+        }
     }
 
     gameOver = () => {
+        this.ctx.font = "24px Arial";
+        this.ctx.fillStyle = "#000";
+        this.ctx.textAlign = "center";
+
+        if (this.score > this.highScore) {
+            this.highScore = this.score
+            localStorage.setItem("highscore", this.highScore);
+
+        }
+
+        const gameOverImg = new Image();
+        gameOverImg.src = "./assets/UI/gameover.png";
+        gameOverImg.onload = () => {
+            this.ctx.drawImage(
+                gameOverImg,
+                this.canvas.width / 2 - gameOverImg.width / 2,
+                this.canvas.height / 4
+            );
+
+            const scoreImgs = this.parseScore(this.score);
+            this.drawScore(scoreImgs, "gameOver");
+
+            const highScoreImgs = this.parseScore(this.highScore);
+            this.drawScore(highScoreImgs, "gameOverBest");
+
+            this.ctx.fillText("SCORE", this.canvas.width / 2, 370);
+            this.ctx.fillText("BEST", this.canvas.width / 2, 570);
+        };
+
+
         document.removeEventListener("keydown", this.map.bird.jump);
         this.canvas.addEventListener("click", this.resetHandler)
         const hitAudio = new Audio("./assets/Sound Efects/hit.ogg");
@@ -80,13 +132,20 @@ class Game {
 
             this.map.drawGround();
 
-            const scoreImgs = this.parseScore();
-            this.drawScore(scoreImgs);
+            if (this.map.checkIfScored()) {
+                this.score++;
+                const pointAudio = new Audio("./assets/Sound Efects/point.ogg");
+                pointAudio.play();
+            }
+
+            const scoreImgs = this.parseScore(this.score);
+            this.drawScore(scoreImgs, "game");
 
             if (this.map.checkPipeCollision()) {
                 this.gameOver();
                 const fallAudio = new Audio("./assets/Sound Efects/die.ogg")
                 fallAudio.play();
+
                 return;
             }
 

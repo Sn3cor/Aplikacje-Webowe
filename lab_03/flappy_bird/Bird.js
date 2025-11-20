@@ -58,7 +58,7 @@ class Bird {
     updateWing = () => {
         this.birdImg.src = this.wingFrames[this.currentFrame];
         this.currentFrame++;
-        this.currentFrame %= 5;
+        this.currentFrame %= 4;
     }
 
     detectGround = () => {

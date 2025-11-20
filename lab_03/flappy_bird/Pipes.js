@@ -6,7 +6,8 @@ class Pipes {
         this.pipes = []
 
         this.lastSpawn = 0;
-        this.spawnInterval = 250;
+        this.spawnInterval = 300;
+        this.passed = false
     }
 
     update = () => {
@@ -27,6 +28,10 @@ class Pipes {
 
     checkCollisions = (bird) => {
         return this.pipes.some(pipe => pipe.collides(bird));
+    }
+
+    checkIfPointIsScored = (bird) => {
+        return this.pipes.some(pipe => pipe.checkIfBirdPassed(bird));
     }
 
 }

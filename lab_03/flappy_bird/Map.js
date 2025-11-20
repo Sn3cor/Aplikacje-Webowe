@@ -40,13 +40,16 @@ class Map {
 
         this.pipes.update();
         this.pipes.drawPipes(this.ctx);
-
         this.bird.drawBird(this.ctx);
         this.drawGround();
     }
 
     checkPipeCollision = () => {
         return this.pipes.checkCollisions(this.bird)
+    }
+
+    checkIfScored = () => {
+        return this.pipes.checkIfPointIsScored(this.bird);
     }
 }
 
