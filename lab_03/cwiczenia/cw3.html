@@ -44,8 +44,7 @@
         <h1>Produkty</h1>
         <div class="sort">
             <div>
-                <input type="search" name="search" placeholder="Wyszukaj produkt">
-                <button id="search">Wyszukaj</button>
+                <input id="search" type="search" name="search" placeholder="Wyszukaj produkt">
             </div>
             <div>
                 <label for="sort">Sortuj</label>
@@ -61,10 +60,13 @@
     </div>
     <script>
         const parent = document.querySelector(".product-grid");
-        let state = null;
-        let def_state = null;
+
         let original = null;
+        let filtered_state = null;
+        let sorted_state = null;
+
         const render = (state) => {
+            clearCards();
             state.forEach(product => {
                 const card = `
                         <img src="${product.thumbnail}" alt="product">
@@ -84,10 +86,10 @@
             .then(res => res.json())
             .then(data => {
                 const def = data.products;
-                state = def;
-                def_state = def;
                 original = def;
-                render(state);
+                filtered_state = def;
+                sorted_state = def;
+                render(sorted_state);
 
             })
 
@@ -104,7 +106,7 @@
         }
 
         const restoreDef = () => {
-            return [...def_state];
+            return [...filtered_state];
         }
 
         const sort = (arr, type) => {
@@ -118,43 +120,43 @@
         }
 
         document.querySelector("select").addEventListener("change", (e) => {
-            const to_render = sort(state, e.target.value);
+            sorted_state = sort(filtered_state, e.target.value);
             clearCards();
-            state = to_render
-            render(state);
+            render(sorted_state);
 
         })
 
         const match = (phrases, target) => {
             const words = (Array.isArray(phrases)) ? phrases : [phrases];
-            return words.every(word => target.map(el => el.toLowerCase()).includes(word.toLowerCase()));
+            return words.every(word => target.some(el => el.toLowerCase().includes(word.toLowerCase())));
         }
 
-        document.getElementById("search").addEventListener("click", () => {
-            const inputValue = document.querySelector("input").value.trim(); // usuwa spacje
+        document.getElementById("search").addEventListener("input", (e) => {
+            const inputValue = e.target.value.trim();
 
-            console.log(inputValue)
             if (!inputValue) {
-                console.log(original)
-                state = [...original]
-                def_state = [...original]
+                filtered_state = [...original]
+                const sort_type = document.querySelector("select").value;
+                sorted_state = sort(filtered_state, sort_type);
                 clearCards();
-                render([...original]);
+                render(sorted_state);
                 return;
             }
 
-            const keywords = inputValue.split(" ").filter(k => k);
+            const cards = [...original];
 
-            const cards = [...state];
-            const new_cards = cards.filter(card => {
+            filtered_state = cards.filter(card => {
                 const title = card.title.split(" ");
                 const desc = card.description.split(" ");
+                const keywords = inputValue.split(" ").filter(k => k);
                 return match(keywords, title) || match(keywords, desc);
             })
-            state = new_cards;
-            def_state = new_cards;
+
+            const sort_type = document.querySelector("select").value;
+            sorted_state = sort(filtered_state, sort_type);
+
             clearCards();
-            render(state)
+            render(sorted_state);
         })
     </script>
 </body>
